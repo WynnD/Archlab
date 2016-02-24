@@ -1,0 +1,7 @@
+.sum_list: 
+push rax
+push rbp
+mov rbp, rsp
+sub $16, rsp
+mov $0, rsp
+mov rax, -8(rsp)
