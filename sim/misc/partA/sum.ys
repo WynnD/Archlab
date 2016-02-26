@@ -1,42 +1,46 @@
-	.pos 0
-init:	irmovl Stack, %esp
-	irmovl Stack, %ebp
-	call main
-	halt
+# Wynn Drahorad wdraho2
+
+        .pos 0
+init:   irmovq stack, %rsp
+        call main
+        halt
 
 
-	.align 8
-array:
-	ele1:
-		.quad 0x00d
-		.quad ele2
-	ele2:
-		.quad 0x0e0
-		.quad ele3
-	ele3:
-		.quad 0xf00
-		.quad 0
+        .align 8
+list:
+        ele1:
+                .quad 0x00d
+                .quad ele2
+        ele2:
+                .quad 0x0e0
+                .quad ele3
+        ele3:
+                .quad 0xf00
+                .quad 0
 
-main:	pushl %ebp
-	rrmovl %esp, %ebp
-	irmovl array, %eax
-	pushl %eax
-	call sum_list
+main:   rrmovq %rsp, %rbp
+        irmovq list, %rdx
+        call sum_list
+        ret
 
+    # long sum_list(list_ptr ls)
+sum_list:
+        #rdx holds pointer to head
+        rrmovq %rdx, %rdi
+        xorq %rax, %rax # <long val = 0>
+        jmp test1
 
-sum_list: 
-	pushl %eax
-	pushl %ebp
-	rrmovl %ebp, %esp
-	subl $16, %esp
-	irmovl $0, %esp
-	rmmovl %eax, -8(%esp)
-	irmovl $0, %edx #<while function check>
-	subl %edx, %eax
-	je (if eax is zero, (null) pass while function) #<begin while loop>
-	mrmovl (%esp), %edx
-	mrmovl (%eax), %eax
-	addl %eax, %edx
-	mrmovl -8(%eax), %eax #<end of while loop>
-	popl %edx
-	ret
+loop:
+        mrmovq (%rdi), %rbx # rbx now holds ls->val
+        addq %rbx, %rax # val+=ls->val
+        mrmovq 8(%rdi), %rdi # ls=ls->next
+
+test1:
+        andq %rdi, %rdi
+        jne loop
+end:
+        ret
+
+        .pos 0x200
+stack:
+

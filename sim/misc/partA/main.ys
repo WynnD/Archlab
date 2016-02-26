@@ -1,0 +1,68 @@
+	.pos 0
+init:	irmovq stack, %rsp
+        call main
+        halt
+
+
+        .align 8
+list:
+        ele1:
+                .quad 0x00d
+                .quad ele2
+        ele2:
+                .quad 0x0e0
+                .quad ele3
+        ele3:
+                .quad 0xf00
+                .quad 0
+
+main:	rrmovq %rsp, %rbp
+        irmovq list, %rdx
+        call sum_list
+	call rsum_list
+	ret
+
+    # long sum_list(list_ptr ls)
+sum_list:
+        #rdx holds pointer to head
+	rrmovq %rdx, %rdi
+	xorq %rax, %rax # <long val = 0>
+	jmp test1
+
+loop:
+        mrmovq (%rdi), %rbx # rbx now holds ls->val
+	addq %rbx, %rax # val+=ls->val
+        mrmovq 8(%rdi), %rdi # ls=ls->next
+	
+test1:
+	andq %rdi, %rdi
+	jne loop	
+end:
+	ret
+
+rsum_list:
+	rrmovq %rdx, %rdi
+	andq %rdi, %rdi
+	jne end2
+	mrmovq (%rdi), %rcx #long val = ls->val;
+	mrmovq 8(%rdi), %rdx #long rest = rsum_list(ls->next);
+	pushq %rcx
+	call rsum_list
+	popq %rcx
+	mrmovq 8(%rdx), %rcx
+	addl %rbx, %rcx
+	pop %rcx
+	ret		
+
+end2:
+	irmovq $0, %rax
+	ret # if ptr is not zero
+
+copy_block:
+	xorq %rax, %rax
+	
+
+
+        .pos 0x200
+stack:
+	

@@ -1,0 +1,45 @@
+#Wynn Drahorad - wdraho2@uic.edu
+
+        .pos 0
+init:   irmovq stack, %rsp
+        call main
+        halt
+
+
+        .align 8
+list:
+        ele1:
+                .quad 0x00d
+                .quad ele2
+        ele2:
+                .quad 0x0e0
+                .quad ele3
+        ele3:
+                .quad 0xf00
+                .quad 0
+
+main:	rrmovq %rsp, %rbp
+        irmovq list, %rdx
+	irmovq $0, %rdi
+	call rsum_list
+	ret
+
+rsum_list:
+        andq %rdx, %rdx
+	je end
+	mrmovq (%rdx), %rax
+	mrmovq 8(%rdx), %rdx
+	pushq %rdx
+	pushq %rax
+	call rsum_list
+	popq %rax
+	addq %rax,%rdi
+        ret
+
+end:	irmovq $0, %rax
+	ret
+
+        .pos 0x200
+stack:
+
+

@@ -1,0 +1,44 @@
+0x000:                      | 	.pos 0
+0x000: 30f40002000000000000 | init:	irmovq stack, %rsp
+0x00a: 804800000000000000   |         call main
+0x013: 00                   |         halt
+                            | 
+                            | 
+0x018:                      |         .align 8
+0x018:                      | list:
+0x018:                      |         ele1:
+0x018: 0d00000000000000     |                 .quad 0x00d
+0x020: 2800000000000000     |                 .quad ele2
+0x028:                      |         ele2:
+0x028: e000000000000000     |                 .quad 0x0e0
+0x030: 3800000000000000     |                 .quad ele3
+0x038:                      |         ele3:
+0x038: 000f000000000000     |                 .quad 0xf00
+0x040: 0000000000000000     |                 .quad 0
+                            | 
+0x048: 2045                 | main:	rrmovq %rsp, %rbp
+0x04a: 30f21800000000000000 |         irmovq list, %rdx
+0x054: 805e00000000000000   |         call sum_list
+0x05d: 90                   | 	ret
+                            | 
+                            |     # long sum_list(list_ptr ls)
+0x05e:                      | sum_list:
+                            |         #rdx holds pointer to head
+0x05e: 2027                 | 	rrmovq %rdx, %rdi
+0x060: 6300                 | 	xorq %rax, %rax # <long val = 0>
+0x062: 708100000000000000   | 	jmp test
+                            | 
+0x06b:                      | loop:
+0x06b: 50320000000000000000 |         mrmovq (%rdx), %rbx # rbx now holds ls->val
+0x075: 6030                 | 	addq %rbx, %rax # val+=ls->val
+0x077: 50220800000000000000 |         mrmovq 8(%rdx), %rdx # ls=ls->next
+                            | 	
+0x081:                      | test:
+0x081: 6222                 | 	andq %rdx, %rdx
+0x083: 746b00000000000000   | 	jne loop	
+0x08c:                      | end:
+0x08c: 90                   | 	ret
+                            | 
+0x200:                      |         .pos 0x200
+0x200:                      | stack:
+                            | 	
