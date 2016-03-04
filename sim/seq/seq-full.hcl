@@ -1,3 +1,23 @@
+# Wynn Drahorad - wdraho2@uic.edu
+
+## Operations required for iaddq function:
+## Fetch:
+## 	icode:ifun <- M[PC]
+## 	rA:rB <- M[PC+1]
+##	valP <- PC+10
+##	valC <- M[PC+2]
+## Decode:
+## 	valB <- R[rB]
+## Execute:
+## 	valE <- valC + valB (the '+' implies ALUADD function, to be exact)
+## 	Set CC
+## Memory:
+## 	N/A
+## Write Back:
+## 	R[rB] <- valE
+## PC update:
+## 	PC <- valP
+
 #/* $begin seq-all-hcl */
 ####################################################################
 #  HCL Description of Control for Single Cycle Y86-64 Processor SEQ   #
@@ -128,7 +148,7 @@ word srcA = [
 
 ## What register should be used as the B source?
 word srcB = [
-	icode in { IOPQ, IRMMOVQ, IMRMOVQ  } : rB;
+	icode in { IOPQ, IRMMOVQ, IMRMOVQ, IIADDQ } : rB;
 	icode in { IPUSHQ, IPOPQ, ICALL, IRET } : RRSP;
 	1 : RNONE;  # Don't need register
 ];
@@ -173,7 +193,7 @@ word alufun = [
 ];
 
 ## Should the condition codes be updated?
-bool set_cc = icode in { IOPQ };
+bool set_cc = icode in { IOPQ, IIADDQ };
 
 ################ Memory Stage    ###################################
 
